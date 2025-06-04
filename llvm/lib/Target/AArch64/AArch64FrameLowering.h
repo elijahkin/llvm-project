@@ -58,7 +58,7 @@ public:
                                           int64_t ObjectOffset, bool isFixed,
                                           bool isSVE, Register &FrameReg,
                                           bool PreferFP, bool ForSimm,
-                                          int64_t FI = -1) const;
+                                          int64_t FI) const;
   bool spillCalleeSavedRegisters(MachineBasicBlock &MBB,
                                  MachineBasicBlock::iterator MI,
                                  ArrayRef<CalleeSavedInfo> CSI,
