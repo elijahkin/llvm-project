@@ -4081,12 +4081,13 @@ void AArch64FrameLowering::determineStackHazardSlot(
         std::optional<int> FI = getLdStFrameID(MI, MFI);
         if (!FI || FI < 0 || FI > int(SlotTypes.size()))
           continue;
-        bool IsScalable = MFI.isScalableStackID(*FI);
-        bool IsPPR = IsScalable && isPPRAccess(MI);
-        if (IsScalable || AArch64InstrInfo::isFpOrNEON(MI)) {
-          SlotTypes[*FI] |= IsPPR ? SlotType::PPR : SlotType::ZPRorFPR;
+        if (MFI.isScalableStackID(*FI)) {
+          SlotTypes[*FI] |=
+              isPPRAccess(MI) ? SlotType::PPR : SlotType::ZPRorFPR;
         } else {
-          SlotTypes[*FI] |= SlotType::GPR;
+          SlotTypes[*FI] |= AArch64InstrInfo::isFpOrNEON(MI)
+                                ? SlotType::ZPRorFPR
+                                : SlotType::GPR;
         }
       }
     }
