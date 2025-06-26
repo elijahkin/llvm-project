@@ -4097,7 +4097,7 @@ void AArch64FrameLowering::determineStackHazardSlot(
       // For SplitSVEObjects remember that this stack slot is a predicate, this
       // will be needed later when determining the frame layout.
       if (SlotTypes[FI] == SlotType::PPR) {
-        MFI.setStackID(FI, TargetStackID::ScalablePredVector);
+        MFI.setStackID(FI, TargetStackID::ScalablePredicateVector);
         HasPPRStackObjects = true;
       }
     }
