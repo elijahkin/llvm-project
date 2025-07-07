@@ -2042,6 +2042,7 @@ void ConvertCIRToLLVMPass::runOnOperation() {
                CIRToLLVMComplexCreateOpLowering,
                CIRToLLVMComplexImagOpLowering,
                CIRToLLVMComplexRealOpLowering,
+               CIRToLLVMComplexRealPtrOpLowering,
                CIRToLLVMConstantOpLowering,
                CIRToLLVMExpectOpLowering,
                CIRToLLVMFuncOpLowering,
@@ -2381,6 +2382,23 @@ mlir::LogicalResult CIRToLLVMComplexImagOpLowering::matchAndRewrite(
   mlir::Type resultLLVMTy = getTypeConverter()->convertType(op.getType());
   rewriter.replaceOpWithNewOp<mlir::LLVM::ExtractValueOp>(
       op, resultLLVMTy, adaptor.getOperand(), llvm::ArrayRef<std::int64_t>{1});
+  return mlir::success();
+}
+
+mlir::LogicalResult CIRToLLVMComplexRealPtrOpLowering::matchAndRewrite(
+    cir::ComplexRealPtrOp op, OpAdaptor adaptor,
+    mlir::ConversionPatternRewriter &rewriter) const {
+  cir::PointerType operandTy = op.getOperand().getType();
+  mlir::Type resultLLVMTy = getTypeConverter()->convertType(op.getType());
+  mlir::Type elementLLVMTy =
+      getTypeConverter()->convertType(operandTy.getPointee());
+
+  mlir::LLVM::GEPArg gepIndices[2] = {0, 0};
+  mlir::LLVM::GEPNoWrapFlags inboundsNuw =
+      mlir::LLVM::GEPNoWrapFlags::inbounds | mlir::LLVM::GEPNoWrapFlags::nuw;
+  rewriter.replaceOpWithNewOp<mlir::LLVM::GEPOp>(
+      op, resultLLVMTy, elementLLVMTy, adaptor.getOperand(), gepIndices,
+      inboundsNuw);
   return mlir::success();
 }
 
