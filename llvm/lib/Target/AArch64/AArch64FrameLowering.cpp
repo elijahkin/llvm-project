@@ -363,11 +363,6 @@ static StackOffset getSVEStackSize(const MachineFunction &MF) {
   return getZPRStackSize(MF) + getPPRStackSize(MF);
 }
 
-static bool hasSVEStackSize(const MachineFunction &MF) {
-  const AArch64FunctionInfo *AFI = MF.getInfo<AArch64FunctionInfo>();
-  return AFI->getStackSizeZPR() > 0 || AFI->getStackSizePPR() > 0;
-}
-
 /// Returns true if PPRs are spilled as ZPRs.
 static bool arePPRsSpilledAsZPR(const MachineFunction &MF) {
   return MF.getSubtarget().getRegisterInfo()->getSpillSize(
